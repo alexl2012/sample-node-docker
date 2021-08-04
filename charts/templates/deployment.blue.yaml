@@ -1,0 +1,7 @@
+{{- if .Values.slotEnabled.blue -}}
+{{- include "webapps-lib.deployment-blue" (list . ".Chart.Name.deployment-blue") -}}
+{{- end -}}
+{{- define ".Chart.Name.deployment-blue" -}}
+{{- if .Values.slotEnabled.blue -}}
+{{- end -}}
+{{- end -}}

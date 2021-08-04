@@ -1,0 +1,7 @@
+{{- if .Values.slotEnabled.green -}}
+{{- include "webapps-lib.hpa-green" (list . ".Chart.Name.hpa-green") -}}
+{{- end -}}
+{{- define ".Chart.Name.hpa-green" -}}
+{{- if .Values.slotEnabled.green -}}
+{{- end -}}
+{{- end -}}

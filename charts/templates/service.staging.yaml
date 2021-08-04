@@ -1,0 +1,3 @@
+{{- include "webapps-lib.service-staging" (list . ".Chart.Name.service-staging") -}}
+{{- define ".Chart.Name.service-staging" -}}
+{{- end -}}

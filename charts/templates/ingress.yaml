@@ -1,0 +1,9 @@
+{{- include "webapps-lib.ingress" (list . ".Chart.Name.ingress") -}}
+{{- define ".Chart.Name.ingress" }}
+spec:
+  rules:
+    {{ include "lego.ingressAkamaiHosts" . | indent 4 }}
+    {{- $countries := list "uk" "pl" "cz" "sk" "hu" "my" "th" -}}
+    {{- $_ := set . "countries" $countries }}
+    {{ include "webapps-lib.ingressOmnichannelHosts" . | indent 4 }}
+{{- end -}}
