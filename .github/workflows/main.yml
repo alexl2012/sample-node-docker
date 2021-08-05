@@ -36,4 +36,5 @@ jobs:
       - name: Run a multi-line script
         run: |
           cd template
+          echo "test"
           sh docker/azure/jobs/build-docker.sh
