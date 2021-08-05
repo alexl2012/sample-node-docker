@@ -31,6 +31,8 @@ jobs:
         with:
           repository: alexl2012/pipeline-templates
           path: templates
+          ssh-key: ${{ secrets.SSH_KEY }}
+          persist-credentials: true
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
