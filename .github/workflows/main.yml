@@ -62,6 +62,7 @@ jobs:
         working-directory: templates
         run: |
           ls -R
+          docker context ls
           
       - name: List Files
         working-directory: source
