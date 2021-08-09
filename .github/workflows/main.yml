@@ -62,6 +62,7 @@ jobs:
           ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
           APP_NAME: node-docker
+          CHARTS_DIR: charts
         
         
   # This workflow contains a single job called "build"
