@@ -71,9 +71,9 @@ jobs:
         shell: bash
         working-directory: source
         run: |
-            templates/build/steps/build-docker.sh -a $APP_NAME -v $VERSION -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
+            ../templates/build/steps/build-docker.sh -a $APP_NAME -v $VERSION -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
         env:
           APP_NAME: node-docker
           REPO_NAME: testacr
           DOCKER_FILE: Dockerfile
-          DOCKER_CONTEXT: ./
+          DOCKER_CONTEXT: .
