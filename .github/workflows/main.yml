@@ -41,4 +41,4 @@ jobs:
           ls -R
       - name: Build Docker
         run: |
-            sh build/steps/build-docker.sh
+            sh templates/build/steps/build-docker.sh
