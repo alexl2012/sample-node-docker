@@ -67,6 +67,7 @@ jobs:
           APP_NAME: node-docker
           REPO_NAME: testacr
       - name: Build App
+        working-directory: src
         run: |
           npm install -g gulp
           npm link gulp
