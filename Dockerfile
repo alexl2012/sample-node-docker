@@ -24,8 +24,9 @@ WORKDIR /app
 # Copy contents of dist folder to /opt/app
 COPY --from=base /build/prod_node_modules ./node_modules
 COPY . .
-RUN useradd -u 8877 docker
-RUN sudo groupadd docker
+
+RUN addgroup -S docker && adduser -S docker -G docker
+
 RUN sudo usermod -aG docker 
 # Give ownership to daemon user
 RUN ["chown", "-R", "docker:docker", "."]
