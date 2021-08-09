@@ -66,13 +66,7 @@ jobs:
         env:
           APP_NAME: node-docker
           REPO_NAME: testacr
-      - name: Build App
-        working-directory: src
-        run: |
-          npm install -g gulp
-          npm link gulp
-          npm install
-          gulp dist
+          
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
