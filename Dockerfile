@@ -4,8 +4,7 @@ COPY package.json .
 
 RUN npm set progress=false && \
     npm config set depth 0 && \
-    npm install --only=production && \
-    npm cache clean
+    npm install --only=production 
 
 # copy production node_modules aside
 RUN cp -R node_modules prod_node_modules
