@@ -35,10 +35,13 @@ jobs:
           persist-credentials: true
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: List Templates
         run: |
           cd templates
           ls -R
+      - name: List Files
+        run: |
+          ls
       - name: Build Docker
         run: |
             templates/build/steps/build-docker.sh -a $APP_NAME -v $GITHUB_RUN_NUMBER -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
