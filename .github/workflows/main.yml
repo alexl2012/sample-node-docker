@@ -69,6 +69,7 @@ jobs:
       - name: Build App
         run: |
           npm install -g gulp
+          npm link gulp
           gulp dist
       - name: Build and push
         uses: docker/build-push-action@v2
