@@ -73,6 +73,7 @@ jobs:
           context: src
           push: true
           tags: ${{ steps.prep.outputs.tagged_image }}
+          file: Dockerfile
 
       
 #       # Checks-out pipeline templates
