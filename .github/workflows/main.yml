@@ -44,37 +44,102 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        
+      - name: Azure Container Registry Login
+        uses: Azure/docker-login@v1
         with:
-          path: source
-      
-      # Checks-out pipeline templates
-      - name: Checkout_Templates
-        uses: actions/checkout@v2.3.4
-        with:
-          repository: alexl2012/pipeline-templates
-          path: templates
-          token: ${{ secrets.REPO_TOKEN }}
-          persist-credentials: true
-
-      # Runs a set of commands using the runners shell
-      - name: List Templates
-        working-directory: templates
-        run: |
-          ls -R
-          docker context ls
+          login-server: t28devregistry.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
           
-      - name: List Files
-        working-directory: source
+      - name: Prepare
+        id: prep
         run: |
-          ls
-      - name: Build Docker
-        shell: bash
-        working-directory: source
-        run: |
-            ../templates/build/steps/build-docker.sh -a $APP_NAME -v $VERSION -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
+          IMAGE="t28devregistry.azurecr.io/${APP_NAME}"
+          echo ::set-output name=tagged_image::${IMAGE}:${VERSION}
+          echo ::set-output name=tag::${TAG}
         env:
           APP_NAME: node-docker
           REPO_NAME: testacr
-          DOCKER_FILE: Dockerfile
-          DOCKER_CONTEXT: .
+          
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: user/app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+#       # Checks-out pipeline templates
+#       - name: Checkout_Templates
+#         uses: actions/checkout@v2.3.4
+#         with:
+#           repository: alexl2012/pipeline-templates
+#           path: templates
+#           token: ${{ secrets.REPO_TOKEN }}
+#           persist-credentials: true
+
+#       # Runs a set of commands using the runners shell
+#       - name: List Templates
+#         working-directory: templates
+#         run: |
+#           ls -R
+#           docker context ls
+          
+#       - name: List Files
+#         working-directory: source
+#         run: |
+#           ls
+
+#       - name: Set up Docker Buildx
+#         id: buildx
+#         uses: docker/setup-buildx-action@v2.6.1
+#         # Only worked for us with this option on 🤷‍♂️
+#         with:
+#           install: true
+
+#       - name: Cache Docker layers
+#         uses: actions/cache@v2
+#         with:
+#           path: /tmp/.buildx-cache
+#           # Key is named differently to avoid collision
+#           key: ${{ runner.os }}-multi-buildx-${{ github.sha }}
+#           restore-keys: |
+#             ${{ runner.os }}-multi-buildx
+
+#       - name: Build production image
+#         uses: docker/build-push-action@v2
+#         with:
+#           context: .
+#           builder: ${{ steps.buildx.outputs.name }}
+#           file: Dockerfile
+#           # Set the desired build target here
+#           target: deploy
+#           push: false
+#           tags: ${{ steps.prep.outputs.tagged_image }}
+#           cache-from: type=local,src=/tmp/.buildx-cache
+#           # Note the mode=max here
+#           # More: https://github.com/moby/buildkit#--export-cache-options
+#           # And: https://github.com/docker/buildx#--cache-tonametypetypekeyvalue
+#           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+
+#       - name: Move cache
+#         run: |
+#           rm -rf /tmp/.buildx-cache
+#           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+#       - name: Build Docker
+#         shell: bash
+#         working-directory: source
+#         run: |
+#             ../templates/build/steps/build-docker.sh -a $APP_NAME -v $VERSION -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
+#         env:
+#           APP_NAME: node-docker
+#           REPO_NAME: testacr
+#           DOCKER_FILE: Dockerfile
+#           DOCKER_CONTEXT: .
