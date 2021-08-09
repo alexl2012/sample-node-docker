@@ -27,7 +27,6 @@ COPY . .
 
 RUN addgroup -S docker && adduser -S docker -G docker
 
-RUN sudo usermod -aG docker 
 # Give ownership to daemon user
 RUN ["chown", "-R", "docker:docker", "."]
 USER docker
