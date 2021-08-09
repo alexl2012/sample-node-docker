@@ -33,6 +33,37 @@ jobs:
 #     prefix: # optional
 #     # The paths to be used to calculate changes (comma-separated)
 #     log-paths: # optional, default is ./
+  build_helm:
+    needs: set_version
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{needs.set_version.outputs.version}}
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Helm tool installer
+        uses: Azure/setup-helm@v1
+        
+      - name: Azure Container Registry Login
+        uses: Azure/docker-login@v1
+        with:
+          login-server: t28devregistry.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      - name: Package Helm Charts
+        run: |
+          export HELM_EXPERIMENTAL_OCI=1
+          helm chart save $CHARTS_DIR $APP_NAME:$VERSION
+          echo $ACR_PASSWORD | helm registry login t28devregistry.azurecr.io \
+           --username $ACR_USERNAME \
+            --password-stdin
+          helm chart push t28devregistry.azurecr.io/helm/$APP_NAME:0.1.0
+        env: 
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+          APP_NAME: node-docker
+        
+        
   # This workflow contains a single job called "build"
   build:
     needs: set_version
