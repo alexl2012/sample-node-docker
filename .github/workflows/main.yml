@@ -15,10 +15,31 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  set_version: 
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Git Version
+      id: version
+      uses: codacy/git-version@2.4.0
+#   with:
+#     # The name of the release branch
+#     release-branch: # default is master
+#     # The name of the dev branch
+#     dev-branch: # default is dev
+#     # The prefix to use in the version
+#     prefix: # optional
+#     # The paths to be used to calculate changes (comma-separated)
+#     log-paths: # optional, default is ./
   # This workflow contains a single job called "build"
   build:
+    needs: set_version
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{jobs.set_version.outputs.version}}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -44,7 +65,7 @@ jobs:
           ls
       - name: Build Docker
         run: |
-            templates/build/steps/build-docker.sh -a $APP_NAME -v $GITHUB_RUN_NUMBER -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
+            templates/build/steps/build-docker.sh -a $APP_NAME -v $VERSION -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
         env:
           APP_NAME: node-docker
           REPO_NAME: testacr
