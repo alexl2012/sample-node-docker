@@ -22,7 +22,7 @@ FROM base as release
 WORKDIR /app
 
 # Copy contents of dist folder to /opt/app
-COPY --from=dependencies /root/chat/prod_node_modules ./node_modules
+COPY --from=base /root/chat/prod_node_modules ./node_modules
 COPY . .
 
 # Give ownership to daemon user
