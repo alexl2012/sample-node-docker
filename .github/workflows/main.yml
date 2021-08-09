@@ -70,4 +70,4 @@ jobs:
           APP_NAME: node-docker
           REPO_NAME: testacr
           DOCKER_FILE: Dockerfile
-          DOCKER_CONTEXT: .
+          DOCKER_CONTEXT: ./
