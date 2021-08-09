@@ -41,7 +41,7 @@ jobs:
           ls -R
       - name: Build Docker
         run: |
-            sh templates/build/steps/build-docker.sh -a $APP_NAME -v $GITHUB_RUN_NUMBER -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
+            templates/build/steps/build-docker.sh -a $APP_NAME -v $GITHUB_RUN_NUMBER -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
         env:
           APP_NAME: node-docker
           REPO_NAME: testacr
