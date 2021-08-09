@@ -45,6 +45,8 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        with:
+          path: source
       
       # Checks-out pipeline templates
       - name: Checkout_Templates
@@ -57,13 +59,17 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: List Templates
+        working-directory: templates
         run: |
-          cd templates
           ls -R
+          
       - name: List Files
+        working-directory: source
         run: |
           ls
       - name: Build Docker
+        shell: bash
+        working-directory: source
         run: |
             templates/build/steps/build-docker.sh -a $APP_NAME -v $VERSION -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
         env:
