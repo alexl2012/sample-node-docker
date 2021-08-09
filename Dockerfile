@@ -24,10 +24,12 @@ WORKDIR /app
 # Copy contents of dist folder to /opt/app
 COPY --from=base /build/prod_node_modules ./node_modules
 COPY . .
-
+RUN useradd -u 8877 docker
+RUN sudo groupadd docker
+RUN sudo usermod -aG docker 
 # Give ownership to daemon user
-RUN ["chown", "-R", "appuser:appuser", "."]
-USER appuser
+RUN ["chown", "-R", "docker:docker", "."]
+USER docker
 
 # Expose port 3000 to the network
 EXPOSE 3000
