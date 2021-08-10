@@ -158,6 +158,7 @@ jobs:
           
       - name: helm-deploy
         run: |
+          rm -f ~/.cache/helm/registry/cache/index.json
           helm chart pull demomfedev.azurecr.io/node-docker:$VERSION
           ls -R
           echo $ENVIRONMENT
