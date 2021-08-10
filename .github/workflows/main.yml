@@ -50,14 +50,14 @@ jobs:
       - name: Azure Container Registry Login
         uses: Azure/docker-login@v1
         with:
-          login-server: t28devregistry.azurecr.io
+          login-server: demomfedev.azurecr.io
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
       - name: Package Helm Charts
         run: |
           export HELM_EXPERIMENTAL_OCI=1
           helm chart save $CHARTS_DIR $REGISTRY/helm/$APP_NAME:$VERSION
-          echo $ACR_PASSWORD | helm registry login t28devregistry.azurecr.io \
+          echo $ACR_PASSWORD | helm registry login $REGISTRY \
            --username $ACR_USERNAME \
             --password-stdin
           helm chart push $REGISTRY/helm/$APP_NAME:$VERSION
@@ -66,7 +66,7 @@ jobs:
           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
           APP_NAME: node-docker
           CHARTS_DIR: ./charts
-          REGISTRY: t28devregistry.azurecr.io
+          REGISTRY: demomfedev.azurecr.io
         
         
   # This workflow contains a single job called "build"
@@ -89,14 +89,14 @@ jobs:
       - name: Azure Container Registry Login
         uses: Azure/docker-login@v1
         with:
-          login-server: t28devregistry.azurecr.io
+          login-server: demomfedev.azurecr.io
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
           
       - name: Prepare
         id: prep
         run: |
-          IMAGE="t28devregistry.azurecr.io/${APP_NAME}"
+          IMAGE="demomfedev.azurecr.io/${APP_NAME}"
           echo ::set-output name=tagged_image::${IMAGE}:${VERSION}
           echo ::set-output name=tag::${TAG}
         env:
