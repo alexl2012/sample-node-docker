@@ -111,6 +111,45 @@ jobs:
           tags: ${{ steps.prep.outputs.tagged_image }}
           file: Dockerfile
 
+  deploy-ppe: 
+    runs-on: ubuntu-latest
+    needs: ["build", "build_helm"]
+    strategy:
+      matrix:
+       include:
+         - environment: "ppe1"
+         - environment: "ppe2"
+
+    steps:
+      - name: helm-deploy
+        run: |
+          echo $ENVIRONMENT
+          #deploy-helm.sh
+        env:
+          ENVIRONMENT: ${{ matrix.environment }}
+          
+  deploy-production: 
+    runs-on: ubuntu-latest
+    needs: ["deploy-ppe"]
+    strategy:
+      matrix:
+       include:
+         - environment: "prod1"
+           region-name: "uksouth"
+         - environment: "prod2"
+           region-name: "northeurope"
+
+    steps:
+      - name: helm-deploy
+        run: |
+          echo $ENVIRONMENT $REGION
+          #deploy-helm.sh
+        env:
+          ENVIRONMENT: ${{ matrix.environment }}
+          REGION: ${{ matrix.region-name }}
+        
+        
+        
       
 #       # Checks-out pipeline templates
 #       - name: Checkout_Templates
