@@ -125,6 +125,7 @@ jobs:
     needs: ["build", "build_helm", "set_version"]
     env:
       VERSION: ${{needs.set_version.outputs.version}}
+      HELM_EXPERIMENTAL_OCI: 1
     strategy:
       matrix:
        include:
@@ -145,7 +146,6 @@ jobs:
         
       - name: Azure Container Registry Login
         run: |
-          export HELM_EXPERIMENTAL_OCI=1
           echo $ACR_PASSWORD | helm registry login $REGISTRY \
            --username $ACR_USERNAME \
           --password-stdin
