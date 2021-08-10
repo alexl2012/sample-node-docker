@@ -158,8 +158,6 @@ jobs:
           
       - name: helm-deploy
         run: |
-          helm chart save node-docker/ demomfedev.azurecr.io/node-docker:$VERSION
-          
           helm chart pull demomfedev.azurecr.io/node-docker:$VERSION
           ls -R
           echo $ENVIRONMENT
