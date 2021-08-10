@@ -20,6 +20,15 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
+    - name: kubeconfig
+      run: |
+        echo $KUBECONFIG
+    - uses: azure/k8s-set-context@v1
+      with:
+        method: service-account
+        k8s-url: demo-mfe-dns-c477ae09.hcp.northeurope.azmk8s.io
+        k8s-secret:  ${{ secrets.DEV_KUBE }}
+      id: setcontext
     - uses: actions/checkout@v2
     - name: Git Version
       id: version
