@@ -137,8 +137,7 @@ jobs:
         with:
           method: service-account
           k8s-url: demo-mfe-dns-c477ae09.hcp.northeurope.azmk8s.io
-          k8s-secret:  ${{ secrets.DEV_K8S }}
-        id: setcontext
+          k8s-secret:  ${{ secrets.DEV_KUBE }}
         
       - name: helm-deploy
         run: |
@@ -163,7 +162,7 @@ jobs:
         with:
           method: service-account
           k8s-url: demo-mfe-dns-c477ae09.hcp.northeurope.azmk8s.io
-          k8s-secret:  ${{ secrets.DEV_K8S }}
+          k8s-secret:  ${{ secrets.DEV_KUBE }}
         id: setcontext
 
       - name: helm-deploy
