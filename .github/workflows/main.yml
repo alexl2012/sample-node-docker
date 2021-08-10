@@ -121,6 +121,9 @@ jobs:
          - environment: "ppe2"
 
     steps:
+      - name: kubeconfig
+        run: |
+          echo $KUBECONFIG
       - uses: azure/k8s-set-context@v1
         with:
           method: service-account
