@@ -122,7 +122,9 @@ jobs:
 
   deploy-ppe: 
     runs-on: ubuntu-latest
-    needs: ["build", "build_helm"]
+    needs: ["build", "build_helm", "set_version"]
+    env:
+      VERSION: ${{needs.set_version.outputs.version}}
     strategy:
       matrix:
        include:
@@ -138,9 +140,20 @@ jobs:
           method: service-account
           k8s-url: demo-mfe-dns-c477ae09.hcp.northeurope.azmk8s.io
           k8s-secret:  ${{ secrets.DEV_KUBE }}
+      - name: Helm tool installer
+        uses: Azure/setup-helm@v1
         
+      - name: Azure Container Registry Login
+        uses: Azure/docker-login@v1
+        with:
+          login-server: demomfedev.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+          
       - name: helm-deploy
         run: |
+          helm fetch demomfedev.azurecr.io/node-docker$VERSION
+          ls -R
           echo $ENVIRONMENT
           #deploy-helm.sh
         env:
@@ -148,7 +161,9 @@ jobs:
           
   deploy-production: 
     runs-on: ubuntu-latest
-    needs: ["deploy-ppe"]
+    needs: ["deploy-ppe", "set_version"]
+    env:
+      VERSION: ${{needs.set_version.outputs.version}}
     strategy:
       matrix:
        include:
