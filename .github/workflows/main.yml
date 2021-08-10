@@ -140,6 +140,12 @@ jobs:
            region-name: "northeurope"
 
     steps:
+      - name: kube-login
+        run: |
+          echo $kube-secret > ~/.kube/config
+          kubectl config get-contexts
+        env:
+          kube-secret: ${{secrets.DEV_K8S}}
       - name: helm-deploy
         run: |
           echo $ENVIRONMENT $REGION
