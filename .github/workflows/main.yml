@@ -56,26 +56,37 @@ jobs:
       - name: Helm tool installer
         uses: Azure/setup-helm@v1
         
-      - name: Azure Container Registry Login
-        uses: Azure/docker-login@v1
+      - name: Azure Login
+        uses: Azure/login@v1
         with:
-          login-server: demomfedev.azurecr.io
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          creds: ${{secrets.AZ_DEV_CLI}}
+
       - name: Package Helm Charts
         run: |
-          export HELM_EXPERIMENTAL_OCI=1
-          helm chart save $CHARTS_DIR $REGISTRY/helm/$APP_NAME:$VERSION
-          echo $ACR_PASSWORD | helm registry login $REGISTRY \
-           --username $ACR_USERNAME \
-            --password-stdin
-          helm chart push $REGISTRY/helm/$APP_NAME:$VERSION
-        env: 
+          az acr helm repo add -n demofedev
+          helm repo update
+          helm package $CHARTS_DIR $REGISTRY/helm/$APP_NAME:$VERSION
+        env:
           ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
           APP_NAME: node-docker
           CHARTS_DIR: ./charts
           REGISTRY: demomfedev.azurecr.io
+          
+#       - name: Package Helm Charts
+#         run: |
+#           export HELM_EXPERIMENTAL_OCI=1
+#           helm chart save $CHARTS_DIR $REGISTRY/helm/$APP_NAME:$VERSION
+#           echo $ACR_PASSWORD | helm registry login $REGISTRY \
+#            --username $ACR_USERNAME \
+#             --password-stdin
+#           helm chart push $REGISTRY/helm/$APP_NAME:$VERSION
+#         env: 
+#           ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+#           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+#           APP_NAME: node-docker
+#           CHARTS_DIR: ./charts
+#           REGISTRY: demomfedev.azurecr.io
         
         
   # This workflow contains a single job called "build"
@@ -144,11 +155,16 @@ jobs:
       - name: Helm tool installer
         uses: Azure/setup-helm@v1
         
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: ${{secrets.AZ_DEV_CLI}}
+
       - name: Azure Container Registry Login
         run: |
-          echo $ACR_PASSWORD | helm registry login $REGISTRY \
-           --username $ACR_USERNAME \
-          --password-stdin
+          az acr helm repo add -n demofedev
+          helm repo update
+          
         env:
           ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
