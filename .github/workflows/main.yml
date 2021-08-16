@@ -144,7 +144,7 @@ jobs:
         
       - name: helm-deploy
         run: |
-          helm chart remove $REGISTRY/helm/$APP_NAME:$VERSION
+          helm chart remove $REGISTRY/helm/$APP_NAME:$VERSION || true
           helm chart pull $REGISTRY/helm/$APP_NAME:$VERSION
           echo $ENVIRONMENT
           #deploy-helm.sh
