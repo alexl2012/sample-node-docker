@@ -155,6 +155,7 @@ jobs:
           cd install
           ls -R
           helm show chart $APP_NAME
+          kubectl config get-contexts
           helm upgrade --install myhelmtest ./$APP_NAME
           #deploy-helm.sh
         env:
