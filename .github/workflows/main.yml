@@ -56,37 +56,26 @@ jobs:
       - name: Helm tool installer
         uses: Azure/setup-helm@v1
         
-      - name: Azure Login
-        uses: Azure/login@v1
+      - name: Azure Container Registry Login
+        uses: Azure/docker-login@v1
         with:
-          creds: ${{secrets.AZ_DEV_CLI}}
-
+          login-server: demomfedev.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
       - name: Package Helm Charts
         run: |
-          az acr helm repo add -n demofedev
-          helm repo update
-          helm package $CHARTS_DIR $REGISTRY/helm/$APP_NAME:$VERSION
-        env:
+          export HELM_EXPERIMENTAL_OCI=1
+          helm chart save $CHARTS_DIR $REGISTRY/helm/$APP_NAME:$VERSION
+          echo $ACR_PASSWORD | helm registry login $REGISTRY \
+           --username $ACR_USERNAME \
+            --password-stdin
+          helm chart push $REGISTRY/helm/$APP_NAME:$VERSION
+        env: 
           ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
           APP_NAME: node-docker
           CHARTS_DIR: ./charts
           REGISTRY: demomfedev.azurecr.io
-          
-#       - name: Package Helm Charts
-#         run: |
-#           export HELM_EXPERIMENTAL_OCI=1
-#           helm chart save $CHARTS_DIR $REGISTRY/helm/$APP_NAME:$VERSION
-#           echo $ACR_PASSWORD | helm registry login $REGISTRY \
-#            --username $ACR_USERNAME \
-#             --password-stdin
-#           helm chart push $REGISTRY/helm/$APP_NAME:$VERSION
-#         env: 
-#           ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
-#           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
-#           APP_NAME: node-docker
-#           CHARTS_DIR: ./charts
-#           REGISTRY: demomfedev.azurecr.io
         
         
   # This workflow contains a single job called "build"
@@ -133,10 +122,9 @@ jobs:
 
   deploy-ppe: 
     runs-on: ubuntu-latest
-    needs: ["build", "build_helm", "set_version"]
+    needs: ["build", "build_helm"]
     env:
       VERSION: ${{needs.set_version.outputs.version}}
-      HELM_EXPERIMENTAL_OCI: 1
     strategy:
       matrix:
        include:
@@ -152,41 +140,21 @@ jobs:
           method: service-account
           k8s-url: demo-mfe-dns-c477ae09.hcp.northeurope.azmk8s.io
           k8s-secret:  ${{ secrets.DEV_KUBE }}
-      - name: Helm tool installer
-        uses: Azure/setup-helm@v1
         
-      - name: Azure Login
-        uses: Azure/login@v1
-        with:
-          creds: ${{secrets.AZ_DEV_CLI}}
-
-      - name: Azure Container Registry Login
-        run: |
-          az acr helm repo add -n demofedev
-          helm repo update
-          
-        env:
-          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
-          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
-          APP_NAME: node-docker
-          CHARTS_DIR: ./charts
-          REGISTRY: demomfedev.azurecr.io
-          
       - name: helm-deploy
         run: |
-          rm -f ~/.cache/helm/registry/cache/index.json
-          helm chart pull demomfedev.azurecr.io/node-docker:$VERSION
-          ls -R
+          helm chart remove $REGISTRY/helm/$APP_NAME:$VERSION
+          helm chart pull $REGISTRY/helm/$APP_NAME:$VERSION
           echo $ENVIRONMENT
           #deploy-helm.sh
         env:
           ENVIRONMENT: ${{ matrix.environment }}
+          REGISTRY: demomfedev.azurecr.io
+          APP_NAME: node-docker
           
   deploy-production: 
     runs-on: ubuntu-latest
-    needs: ["deploy-ppe", "set_version"]
-    env:
-      VERSION: ${{needs.set_version.outputs.version}}
+    needs: ["deploy-ppe"]
     strategy:
       matrix:
        include:
@@ -210,74 +178,3 @@ jobs:
         env:
           ENVIRONMENT: ${{ matrix.environment }}
           REGION: ${{ matrix.region-name }}
-        
-        
-        
-      
-#       # Checks-out pipeline templates
-#       - name: Checkout_Templates
-#         uses: actions/checkout@v2.3.4
-#         with:
-#           repository: alexl2012/pipeline-templates
-#           path: templates
-#           token: ${{ secrets.REPO_TOKEN }}
-#           persist-credentials: true
-
-#       # Runs a set of commands using the runners shell
-#       - name: List Templates
-#         working-directory: templates
-#         run: |
-#           ls -R
-#           docker context ls
-          
-#       - name: List Files
-#         working-directory: source
-#         run: |
-#           ls
-
-#       - name: Set up Docker Buildx
-#         id: buildx
-#         uses: docker/setup-buildx-action@v2.6.1
-#         # Only worked for us with this option on 🤷‍♂️
-#         with:
-#           install: true
-
-#       - name: Cache Docker layers
-#         uses: actions/cache@v2
-#         with:
-#           path: /tmp/.buildx-cache
-#           # Key is named differently to avoid collision
-#           key: ${{ runner.os }}-multi-buildx-${{ github.sha }}
-#           restore-keys: |
-#             ${{ runner.os }}-multi-buildx
-
-#       - name: Build production image
-#         uses: docker/build-push-action@v2
-#         with:
-#           context: .
-#           builder: ${{ steps.buildx.outputs.name }}
-#           file: Dockerfile
-#           # Set the desired build target here
-#           target: deploy
-#           push: false
-#           tags: ${{ steps.prep.outputs.tagged_image }}
-#           cache-from: type=local,src=/tmp/.buildx-cache
-#           # Note the mode=max here
-#           # More: https://github.com/moby/buildkit#--export-cache-options
-#           # And: https://github.com/docker/buildx#--cache-tonametypetypekeyvalue
-#           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
-
-#       - name: Move cache
-#         run: |
-#           rm -rf /tmp/.buildx-cache
-#           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-#       - name: Build Docker
-#         shell: bash
-#         working-directory: source
-#         run: |
-#             ../templates/build/steps/build-docker.sh -a $APP_NAME -v $VERSION -r $REPO_NAME -df $DOCKER_FILE -dc $DOCKER_CONTEXT
-#         env:
-#           APP_NAME: node-docker
-#           REPO_NAME: testacr
-#           DOCKER_FILE: Dockerfile
-#           DOCKER_CONTEXT: .
