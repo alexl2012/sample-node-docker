@@ -150,6 +150,12 @@ jobs:
           helm chart remove $REGISTRY/helm/$APP_NAME:$VERSION || true
           helm chart pull $REGISTRY/helm/$APP_NAME:$VERSION
           echo $ENVIRONMENT
+          helm chart export $REGISTRY/helm/$APP_NAME:$VERSION \
+            --destination ./install
+          cd install
+          ls -R
+          helm show chart $APP_NAME
+          helm upgrade --install myhelmtest ./$APP_NAME
           #deploy-helm.sh
         env:
           ENVIRONMENT: ${{ matrix.environment }}
