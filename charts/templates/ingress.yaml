@@ -10,17 +10,18 @@ metadata:
     appgw.ingress.kubernetes.io/connection-draining-timeout: "60"
 spec:
   rules:
+  - host: origin-{{ $.Values.environment }}-{{ $.Values.appName }}-{{ . }}.omnichannel.tescocloud.com
     http:
       paths:
       - path: {{ $.Values.ingressPath }}
         backend:
           serviceName: {{ .Values.environment }}-{{ template "applicationName" . }}-prod
           servicePort: {{ .Values.servicePort }}
-      - host: origin-{{ $.Values.environment }}-{{ $.Values.appName }}-{{ . }}.omnichannel.tescocloud.com
+  - host: staging-{{ $.Values.environment }}-{{ $.Values.appName }}-{{ . }}.omnichannel.tescocloud.com
     http:
       paths:
       - path: {{ $.Values.ingressPath }}
         backend:
           serviceName: {{ .Values.environment }}-{{ template "applicationName" . }}-staging
           servicePort: {{ .Values.servicePort }}
-      - host: staging-{{ $.Values.environment }}-{{ $.Values.appName }}-{{ . }}.omnichannel.tescocloud.com
+      
