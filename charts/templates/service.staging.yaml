@@ -11,7 +11,7 @@ spec:
   # type: LoadBalancer
   ports:
   - port: {{ .Values.servicePort }}
-    targetPort: {{ .Values.targetContainerPortName | default .Values.containerPort }}
+    targetPort: {{ .Values.containerPortName | default .Values.containerPort }}
   selector:
     {{- if eq .Values.production "blue"  }}
     app: {{ template "applicationName" . }}-green

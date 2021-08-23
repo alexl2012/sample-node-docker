@@ -2,8 +2,8 @@
 environment: production
 appName: docker-node
 
-targetContainerPortName: web
 containerPort: 3000
+containerPortName: web
 servicePort: 80
 production: blue
 ingressPath: "/test"

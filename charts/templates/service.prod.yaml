@@ -11,6 +11,6 @@ spec:
   # type: LoadBalancer
   ports:
   - port: {{ .Values.servicePort }}
-    targetPort: {{ .Values.targetContainerPortName | default .Values.containerPort }}
+    targetPort: {{ .Values.containerPortName | default .Values.containerPort }}
   selector:
     app: {{ template "applicationName" . }}-{{ .Values.production }}
