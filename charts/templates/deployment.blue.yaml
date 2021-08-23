@@ -29,6 +29,7 @@ spec:
       containers:
       - image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
         imagePullPolicy: IfNotPresent
+        name: {{ .Values.environment }}-{{ template "applicationName" . }}
         livenessProbe:
           httpGet:
             path: {{ .Values.livenessHealthCheckPath | default "/live" }}
