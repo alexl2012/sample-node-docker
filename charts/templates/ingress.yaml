@@ -1,9 +1,24 @@
-{{- include "webapps-lib.ingress" (list . ".Chart.Name.ingress") -}}
-{{- define ".Chart.Name.ingress" }}
-spec:
-  rules:
-    {{ include "lego.ingressAkamaiHosts" . | indent 4 }}
-    {{- $countries := list "uk" "pl" "cz" "sk" "hu" "my" "th" -}}
-    {{- $_ := set . "countries" $countries }}
-    {{ include "webapps-lib.ingressOmnichannelHosts" . | indent 4 }}
-{{- end -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "applicationName" . }}-{{ .Values.environment }}-listener
+  namespace: {{ .Values.appName }}
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/appgw-ssl-certificate: omnichannel-letsencrypt-tls
+    appgw.ingress.kubernetes.io/connection-draining: "true"
+    appgw.ingress.kubernetes.io/connection-draining-timeout: "60"
+http:
+  paths:
+  - path: {{ $.Values.ingressPath }}
+    backend:
+      serviceName: {{ .Values.environment }}-{{ template "applicationName" . }}-prod
+      servicePort: {{ .Values.servicePort }}
+  - host: origin-{{ $.Values.environment }}-{{ $.Values.appName }}-{{ . }}.omnichannel.tescocloud.com
+http:
+  paths:
+  - path: {{ $.Values.ingressPath }}
+    backend:
+      serviceName: {{ .Values.environment }}-{{ template "applicationName" . }}-staging
+      servicePort: {{ .Values.servicePort }}
+  - host: staging-{{ $.Values.environment }}-{{ $.Values.appName }}-{{ . }}.omnichannel.tescocloud.com

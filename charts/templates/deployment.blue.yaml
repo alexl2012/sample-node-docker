@@ -1,7 +1,66 @@
-{{- if .Values.slotEnabled.blue -}}
-{{- include "webapps-lib.deployment-blue" (list . ".Chart.Name.deployment-blue") -}}
-{{- end -}}
-{{- define ".Chart.Name.deployment-blue" -}}
-{{- if .Values.slotEnabled.blue -}}
-{{- end -}}
-{{- end -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.environment }}-{{ template "applicationName" . }}-blue
+  namespace: {{ .Values.appName }}
+  labels:
+    app: {{ template "applicationName" . }}-blue
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.maxSurge | default "100%" }}
+      maxUnavailable: {{ .Values.maxUnavailable | default "10%" }}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "applicationName" . }}-blue
+  template:
+    metadata:
+      labels:
+        app: {{ template "applicationName" . }}-blue
+        aadpodidbinding: {{ .Chart.Name }}-azure-identity-kv
+    spec:
+      dnsConfig:
+        options:
+        - name: single-request-reopen
+        - name: ndots
+          value: {{ .Values.ndots | default 1 | quote }}
+      terminationGracePeriodSeconds: 101
+      containers:
+      - image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+            httpGet:
+            path: {{ .Values.livenessHealthCheckPath | default "/live" }}
+            scheme: HTTP
+            port: {{ .Values.livenessHealthPort | default .Values.containerPort }}}}
+            initialDelaySeconds: {{ .Values.livenessProbeInitialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbePeriodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbeTimeoutSeconds }}
+            failureThreshold: {{ .Values.livenessProbeFailureThreshold }}
+        readinessProbe:
+            httpGet:
+            path: {{ .Values.readinessHealthCheckPath | default "/ready" }}
+            scheme: HTTP
+            port: {{ .Values.readinessHealthPort | default .Values.containerPort }}
+            initialDelaySeconds: {{ .Values.readinessProbeInitialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbePeriodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbeTimeoutSeconds }}
+            failureThreshold: {{ .Values.readinessProbeFailureThreshold }}
+        lifecycle:
+            preStop:
+            exec:
+                command: ["sleep","90"]
+        env:
+        - name: CURRENT_RELEASE_VERSION
+          value: {{ .Chart.AppVersion }}
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+          name: {{ .Values.containerPortName }}
+        resources:
+          limits:
+            cpu: 512m
+            memory: 1000Mi
+          requests:
+            cpu: 512m
+            memory: 1000Mi

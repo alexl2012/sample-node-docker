@@ -1,3 +1,16 @@
-{{- include "webapps-lib.service-prod" (list . ".Chart.Name.service-prod") -}}
-{{- define ".Chart.Name.service-prod" -}}
-{{- end -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.environment}}-{{ template "applicationName" . }}-prod
+  namespace: {{ .Values.appName }}
+  labels:
+    app: {{ template "applicationName" . }}-prod
+spec:
+  # if your cluster supports it, uncomment the following to automatically create
+  # an external load-balanced IP for the backend service.
+  # type: LoadBalancer
+  ports:
+  - port: {{ .Values.servicePort }}
+    targetPort: {{ .Values.targetContainerPortName | default .Values.containerPort }}
+  selector:
+    app: {{ template "applicationName" . }}-{{ .Values.production }}

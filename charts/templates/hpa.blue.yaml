@@ -1,7 +1,13 @@
-{{- if .Values.slotEnabled.blue -}}
-{{- include "webapps-lib.hpa-blue" (list . ".Chart.Name.hpa-blue") -}}
-{{- end -}}
-{{- define ".Chart.Name.hpa-blue" -}}
-{{- if .Values.slotEnabled.blue -}}
-{{- end -}}
-{{- end -}}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "applicationName" . }}-hpa-blue
+  namespace: {{ .Values.namespace}}
+spec:
+  maxReplicas: {{ coalesce .Values.maxPodReplicas "1" }} #50
+  minReplicas: {{ coalesce .Values.minPodReplicas "1" }} #50
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.environment}}-{{ template "applicationName" . }}-blue
+  targetCPUUtilizationPercentage: {{ .Values.targetCPUUtilizationPercentage | default 55}}

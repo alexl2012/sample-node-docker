@@ -1,5 +1,31 @@
 # #Use these as an example to create the values file for this application
+environment: production
+appName: docker-node
 
+targetContainerPortName: web
+containerPort: 3000
+servicePort: 80
+production: blue
+ingressPath: "/test"
+
+
+maxPodReplicas: 10
+minPodReplicas: 2
+targetCPUUtilizationPercentage: 50
+
+maxSurge: 100%
+maxUnavailable: 20%
+
+image:
+  repository: cert.azurecr.io/node-docker
+ndots: 5
+resources:
+  limits:
+    cpu: 512m
+    memory: 1000Mi
+  requests:
+    cpu: 512m
+    memory: 1000Mi
 # app_appName: mango
 # inj_branchOrBranchType: release
 # inj_deployEnv: ppe1

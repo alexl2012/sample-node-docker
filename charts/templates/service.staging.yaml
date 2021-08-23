@@ -1,3 +1,20 @@
-{{- include "webapps-lib.service-staging" (list . ".Chart.Name.service-staging") -}}
-{{- define ".Chart.Name.service-staging" -}}
-{{- end -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.environment }}-{{ template "applicationName" . }}-prod
+  namespace: {{ .Values.appName }}
+  labels:
+    app: {{ template "applicationName" . }}-prod
+spec:
+  # if your cluster supports it, uncomment the following to automatically create
+  # an external load-balanced IP for the backend service.
+  # type: LoadBalancer
+  ports:
+  - port: {{ .Values.servicePort }}
+    targetPort: {{ .Values.targetContainerPortName | default .Values.containerPort }}
+  selector:
+    {{- if eq .Values.production "blue"  }}
+    app: {{ template "applicationName" . }}-green
+    {{- else  }}
+    app: {{ template "applicationName" . }}-blue
+    {{- end  }}

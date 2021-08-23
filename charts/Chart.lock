@@ -1,6 +1,0 @@
-dependencies:
-- name: webapps-prod-lib
-  repository: file://../webapps-prod-lib
-  version: 0.1.0
-digest: sha256:6d4d318d4443f8ef5d968f5e271afdd91f1534edcb78747589fe32f733e54ff4
-generated: "2020-05-09T14:33:10.949032+01:00"
