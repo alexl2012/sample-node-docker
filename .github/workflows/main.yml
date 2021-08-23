@@ -133,6 +133,10 @@ jobs:
          - environment: "ppe2"
 
     steps:
+      - name: Kubectl tool installer
+        uses: Azure/setup-kubectl@v1
+        with:
+          version: 1.21.3
       - name: kubeconfig
         run: |
           echo $KUBECONFIG
