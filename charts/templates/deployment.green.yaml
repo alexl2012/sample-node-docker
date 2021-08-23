@@ -34,7 +34,7 @@ spec:
           httpGet:
             path: {{ .Values.livenessHealthCheckPath | default "/live" }}
             scheme: HTTP
-            port: {{ .Values.livenessHealthPort | default .Values.containerPort }}}}
+            port: {{ .Values.containerPortName }}
           initialDelaySeconds: {{ .Values.livenessProbeInitialDelaySeconds }}
           periodSeconds: {{ .Values.livenessProbePeriodSeconds }}
           timeoutSeconds: {{ .Values.livenessProbeTimeoutSeconds }}
@@ -43,7 +43,7 @@ spec:
           httpGet:
             path: {{ .Values.readinessHealthCheckPath | default "/ready" }}
             scheme: HTTP
-            port: {{ .Values.readinessHealthPort | default .Values.containerPort }}
+            port: {{ .Values.containerPortName }}
           initialDelaySeconds: {{ .Values.readinessProbeInitialDelaySeconds }}
           periodSeconds: {{ .Values.readinessProbePeriodSeconds }}
           timeoutSeconds: {{ .Values.readinessProbeTimeoutSeconds }}
