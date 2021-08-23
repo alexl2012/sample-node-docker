@@ -171,6 +171,34 @@ jobs:
           ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
 
+      - name: intergration-tests
+        run: |
+          FILE=intergration-test.sh
+          if [ -f "$FILE" ]; then
+              echo "$FILE exists."
+              currentSlot=`(helm get values --all myhelmtest -o json | jq -r .production | xargs)`
+              echo Current Slot is $currentSlot
+              $HOSTS=(kubectl get ing myhelmtest-node-docker-production-listener -o json -n docker-node | jq '.spec.rules[].host' | xargs | tr ' ' ',')
+              sh $FILE $HOSTS
+              RESULT=$?
+              if [ $RESULT -eq 0 ]; then
+                echo "Intergration Tests successful"
+                echo "swapping slot"
+                if [ "$currentSlot" == "blue" ]; then
+                    newSlot="green"
+                else
+                    newSlot="blue"
+                fi
+                deploymentOption=productionSlot=$newSlot
+                helm upgrade yourReleaseName --set $deploymentOption --reuse-values
+              else
+                echo Deployment failed Rolling Back
+                helm rollback myhelmtest
+              fi
+          else
+              echo "Intergration Test file not found"
+          fi
+
   deploy-production: 
     runs-on: ubuntu-latest
     needs: ["deploy-ppe"]
