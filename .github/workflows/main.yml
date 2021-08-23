@@ -143,7 +143,7 @@ jobs:
       - uses: azure/k8s-set-context@v1
         with:
           method: service-account
-          k8s-url: demo-mfe-dns-c477ae09.hcp.northeurope.azmk8s.io
+          k8s-url: https://demo-mfe-dns-c477ae09.hcp.northeurope.azmk8s.io
           k8s-secret:  ${{ secrets.DEV_KUBE }}
         
       - name: helm-deploy
