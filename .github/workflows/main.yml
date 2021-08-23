@@ -144,6 +144,7 @@ jobs:
         
       - name: helm-deploy
         run: |
+          kubectl get pods
           echo $ACR_PASSWORD | helm registry login $REGISTRY \
             --username $ACR_USERNAME \
             --password-stdin
