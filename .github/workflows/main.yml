@@ -183,17 +183,47 @@ jobs:
            region-name: "northeurope"
 
     steps:
+      - name: Kubectl tool installer
+        uses: Azure/setup-kubectl@v1
+        with:
+          version: v1.21.3
+      - name: kubeconfig
+        run: |
+          echo $KUBECONFIG
       - uses: azure/k8s-set-context@v1
         with:
           method: service-account
-          k8s-url: demo-mfe-dns-c477ae09.hcp.northeurope.azmk8s.io
+          k8s-url: https://demo-mfe-dns-c477ae09.hcp.northeurope.azmk8s.io
           k8s-secret:  ${{ secrets.DEV_KUBE }}
-        id: setcontext
-
+        
       - name: helm-deploy
         run: |
-          echo $ENVIRONMENT $REGION
+          kubectl version
+          kubectl get pods
+          echo $ACR_PASSWORD | helm registry login $REGISTRY \
+            --username $ACR_USERNAME \
+            --password-stdin
+          helm chart remove $REGISTRY/helm/$APP_NAME:$VERSION || true
+          helm chart pull $REGISTRY/helm/$APP_NAME:$VERSION
+          echo $ENVIRONMENT
+          helm chart export $REGISTRY/helm/$APP_NAME:$VERSION \
+            --destination ./install
+          cd install
+          ls -R
+          helm show chart $APP_NAME
+          kubectl config get-contexts
+          helm upgrade --install myhelmtest ./$APP_NAME
+          RESULT=$?
+          if [ $RESULT -eq 0 ]; then
+            echo "Deployment successful"
+          else
+            echo Deployment failed Rolling Back
+            helm rollback myhelmtest
+          fi
           #deploy-helm.sh
         env:
           ENVIRONMENT: ${{ matrix.environment }}
-          REGION: ${{ matrix.region-name }}
+          REGISTRY: demomfedev.azurecr.io
+          APP_NAME: node-docker
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
