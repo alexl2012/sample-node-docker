@@ -13,14 +13,14 @@ spec:
   - host: origin-{{ .Values.environment }}-{{ .Values.appName }}-{{ . }}.omnichannel.tescocloud.com
     http:
       paths:
-      - path: {{ $.Values.ingressPath }}
+      - path: {{ .Values.ingressPath }}
         backend:
           serviceName: {{ .Values.environment }}-{{ template "applicationName" . }}-prod
           servicePort: {{ .Values.servicePort }}
   - host: staging-{{ .Values.environment }}-{{ .Values.appName }}-{{ . }}.omnichannel.tescocloud.com
     http:
       paths:
-      - path: {{ $.Values.ingressPath }}
+      - path: {{ .Values.ingressPath }}
         backend:
           serviceName: {{ .Values.environment }}-{{ template "applicationName" . }}-staging
           servicePort: {{ .Values.servicePort }}
