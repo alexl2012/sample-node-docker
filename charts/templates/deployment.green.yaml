@@ -49,9 +49,9 @@ spec:
           timeoutSeconds: {{ .Values.readinessProbeTimeoutSeconds }}
           failureThreshold: {{ .Values.readinessProbeFailureThreshold }}
         lifecycle:
-        preStop:
-          exec:
-              command: ["sleep","90"]
+          preStop:
+            exec:
+                command: ["sleep","90"]
         env:
         - name: CURRENT_RELEASE_VERSION
           value: {{ .Chart.AppVersion }}
