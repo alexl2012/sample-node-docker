@@ -30,25 +30,25 @@ spec:
       - image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
         imagePullPolicy: IfNotPresent
         livenessProbe:
-            httpGet:
+          httpGet:
             path: {{ .Values.livenessHealthCheckPath | default "/live" }}
             scheme: HTTP
             port: {{ .Values.livenessHealthPort | default .Values.containerPort }}}}
-            initialDelaySeconds: {{ .Values.livenessProbeInitialDelaySeconds }}
-            periodSeconds: {{ .Values.livenessProbePeriodSeconds }}
-            timeoutSeconds: {{ .Values.livenessProbeTimeoutSeconds }}
-            failureThreshold: {{ .Values.livenessProbeFailureThreshold }}
+          initialDelaySeconds: {{ .Values.livenessProbeInitialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbePeriodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbeTimeoutSeconds }}
+          failureThreshold: {{ .Values.livenessProbeFailureThreshold }}
         readinessProbe:
-            httpGet:
+          httpGet:
             path: {{ .Values.readinessHealthCheckPath | default "/ready" }}
             scheme: HTTP
             port: {{ .Values.readinessHealthPort | default .Values.containerPort }}
-            initialDelaySeconds: {{ .Values.readinessProbeInitialDelaySeconds }}
-            periodSeconds: {{ .Values.readinessProbePeriodSeconds }}
-            timeoutSeconds: {{ .Values.readinessProbeTimeoutSeconds }}
-            failureThreshold: {{ .Values.readinessProbeFailureThreshold }}
+          initialDelaySeconds: {{ .Values.readinessProbeInitialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbePeriodSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbeTimeoutSeconds }}
+          failureThreshold: {{ .Values.readinessProbeFailureThreshold }}
         lifecycle:
-            preStop:
+          preStop:
             exec:
                 command: ["sleep","90"]
         env:
