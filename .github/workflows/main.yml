@@ -163,6 +163,7 @@ jobs:
           helm show chart $APP_NAME
           kubectl config get-contexts
           helm upgrade --install myhelmtest ./$APP_NAME
+          echo "#/bin/bash \ exit 0" >> intergration-test.sh
           #deploy-helm.sh
         env:
           ENVIRONMENT: ${{ matrix.environment }}
