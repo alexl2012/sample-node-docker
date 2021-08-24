@@ -127,6 +127,7 @@ jobs:
       VERSION: ${{needs.set_version.outputs.version}}
       HELM_EXPERIMENTAL_OCI: 1
     strategy:
+      max-parallel: 1
       matrix:
        include:
          - environment: "ppe1"
