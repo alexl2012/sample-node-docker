@@ -192,6 +192,7 @@ jobs:
                 else
                     newSlot="blue"
                 fi
+                echo "New Slot is " $newSlot
                 deploymentOption=productionSlot=$newSlot
                 helm upgrade myhelmtest ./install/node-docker --set $deploymentOption --reuse-values
               else
