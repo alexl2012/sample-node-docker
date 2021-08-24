@@ -193,7 +193,7 @@ jobs:
                     newSlot="blue"
                 fi
                 echo "New Slot is " $newSlot
-                deploymentOption=productionSlot=$newSlot
+                deploymentOption=production=$newSlot
                 helm upgrade myhelmtest ./install/node-docker --set $deploymentOption --reuse-values
               else
                 echo Deployment failed Rolling Back
