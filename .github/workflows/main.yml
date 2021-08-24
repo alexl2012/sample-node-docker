@@ -178,7 +178,7 @@ jobs:
               echo "$FILE exists."
               currentSlot=`(helm get values --all myhelmtest -o json | jq -r .production | xargs)`
               echo Current Slot is $currentSlot
-              $HOSTS=(kubectl get ing myhelmtest-node-docker-production-listener -o json -n docker-node | jq '.spec.rules[].host' | xargs | tr ' ' ',')
+              $HOSTS=`(kubectl get ing myhelmtest-node-docker-production-listener -o json -n docker-node | jq '.spec.rules[].host' | xargs | tr ' ' ',')`
               sh $FILE $HOSTS
               RESULT=$?
               if [ $RESULT -eq 0 ]; then
