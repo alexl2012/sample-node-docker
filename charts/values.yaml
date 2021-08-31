@@ -22,6 +22,7 @@ slotEnabled:
 
 image:
   repository: demomfedev.azurecr.io/node-docker
+  version: 1.0.0
 ndots: 5
 resources:
   limits:
