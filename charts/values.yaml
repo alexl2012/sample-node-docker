@@ -21,7 +21,7 @@ slotEnabled:
   green: true
 
 image:
-  repository: cert.azurecr.io/node-docker
+  repository: demomfedev.azurecr.io/node-docker
 ndots: 5
 resources:
   limits:
