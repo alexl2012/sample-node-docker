@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ template "applicationName" . }}-{{ .Values.environment }}-listener
-  namespace: {{ .Values.appName }}
+  namespace: {{ .Values.Namespace }}
   annotations:
     kubernetes.io/ingress.class: azure/application-gateway
     appgw.ingress.kubernetes.io/appgw-ssl-certificate: omnichannel-letsencrypt-tls
@@ -17,11 +17,11 @@ spec:
         backend:
           serviceName: {{ .Values.environment }}-{{ template "applicationName" . }}-prod
           servicePort: {{ .Values.servicePort }}
-  - host: staging-{{ .Values.environment }}-{{ .Values.appName }}.omnichannel.tescocloud.com
-    http:
-      paths:
-      - path: {{ .Values.ingressPath }}
-        backend:
-          serviceName: {{ .Values.environment }}-{{ template "applicationName" . }}-staging
-          servicePort: {{ .Values.servicePort }}
+  # - host: staging-{{ .Values.environment }}-{{ .Values.appName }}.omnichannel.tescocloud.com
+  #   http:
+  #     paths:
+  #     - path: {{ .Values.ingressPath }}
+  #       backend:
+  #         serviceName: {{ .Values.environment }}-{{ template "applicationName" . }}-staging
+  #         servicePort: {{ .Values.servicePort }}
       

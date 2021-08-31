@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Values.environment}}-{{ template "applicationName" . }}-prod
-  namespace: {{ .Values.appName }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "applicationName" . }}-prod
 spec:
@@ -13,4 +13,4 @@ spec:
   - port: {{ .Values.servicePort }}
     targetPort: {{ .Values.containerPortName | default .Values.containerPort }}
   selector:
-    app: {{ template "applicationName" . }}-{{ .Values.production }}
+    app: {{ template "applicationName" . }}-{{ .Release.Name }}

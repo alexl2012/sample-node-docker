@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.environment }}-{{ template "applicationName" . }}-blue
-  namespace: {{ .Values.appName }}
+  name: {{ .Values.environment }}-{{ template "applicationName" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ template "applicationName" . }}-blue
+    app: {{ template "applicationName" . }}-{{ .Release.Name }}
 spec:
   strategy:
     rollingUpdate:
@@ -14,11 +14,11 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: {{ template "applicationName" . }}-blue
+      app: {{ template "applicationName" . }}-{{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "applicationName" . }}-blue
+        app: {{ template "applicationName" . }}-{{ .Release.Name }}
         aadpodidbinding: {{ .Chart.Name }}-azure-identity-kv
     spec:
       dnsConfig:

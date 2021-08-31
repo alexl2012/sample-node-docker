@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ template "applicationName" . }}-hpa-blue
-  namespace: {{ .Values.namespace}}
+  name: {{ template "applicationName" . }}-hpa-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
 spec:
   maxReplicas: {{ coalesce .Values.maxPodReplicas "1" }} #50
   minReplicas: {{ coalesce .Values.minPodReplicas "1" }} #50
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ .Values.environment}}-{{ template "applicationName" . }}-blue
+    name: {{ .Values.environment}}-{{ template "applicationName" . }}-{{ .Release.Name }}
   targetCPUUtilizationPercentage: {{ .Values.targetCPUUtilizationPercentage | default 55}}
 {{- end -}}
