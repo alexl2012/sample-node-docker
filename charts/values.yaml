@@ -16,6 +16,10 @@ targetCPUUtilizationPercentage: 50
 maxSurge: 100%
 maxUnavailable: 20%
 
+slotEnabled:
+  blue : true
+  green: true
+
 image:
   repository: cert.azurecr.io/node-docker
 ndots: 5

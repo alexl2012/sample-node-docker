@@ -1,3 +1,4 @@
+{{- if .Values.slotEnabled.green  -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -65,3 +66,7 @@ spec:
           requests:
             cpu: 512m
             memory: 1000Mi
+      imagePullSecrets:
+      - name: regcred
+
+{{- end -}}

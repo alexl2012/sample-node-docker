@@ -1,3 +1,4 @@
+{{- if .Values.slotEnabled.green  -}}
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
@@ -11,3 +12,4 @@ spec:
     kind: Deployment
     name: {{ .Values.environment }}-{{ template "applicationName" . }}-green
   targetCPUUtilizationPercentage: {{ .Values.targetCPUUtilizationPercentage | default 55}}
+{{-end-}}
