@@ -163,11 +163,7 @@ jobs:
           ls -R
           helm show chart $APP_NAME
           kubectl config get-contexts
-          helm upgrade --install myhelmtest-1-2-3 ./$APP_NAME --set image.version=$VERSION
-          echo "install complete doing the next one"
-          helm upgrade --install myhelmtest-1-2-4 ./$APP_NAME --set image.version=$VERSION
-          sleep 500
-          helm upgrade --install myhelmtest-1-2-5 ./$APP_NAME --set image.version=$VERSION
+          helm upgrade --install demo-app ./$APP_NAME --set image.version=$VERSION -n tests
           echo "#/bin/bash \ exit 0" >> intergration-test.sh
           #deploy-helm.sh
         env:
@@ -226,40 +222,3 @@ jobs:
       - name: kubeconfig
         run: |
           echo $KUBECONFIG
-      # - uses: azure/k8s-set-context@v1
-      #   with:
-      #     method: service-account
-      #     k8s-url: https://demo-mfe-dns-c477ae09.hcp.northeurope.azmk8s.io
-      #     k8s-secret:  ${{ secrets.DEV_KUBE }}
-        
-      # - name: helm-deploy
-      #   run: |
-      #     kubectl version
-      #     kubectl get pods
-      #     echo $ACR_PASSWORD | helm registry login $REGISTRY \
-      #       --username $ACR_USERNAME \
-      #       --password-stdin
-      #     helm chart remove $REGISTRY/helm/$APP_NAME:$VERSION || true
-      #     helm chart pull $REGISTRY/helm/$APP_NAME:$VERSION
-      #     echo $ENVIRONMENT
-      #     helm chart export $REGISTRY/helm/$APP_NAME:$VERSION \
-      #       --destination ./install
-      #     cd install
-      #     ls -R
-      #     helm show chart $APP_NAME
-      #     kubectl config get-contexts
-      #     helm upgrade --install myhelmtest ./$APP_NAME
-      #     RESULT=$?
-      #     if [ $RESULT -eq 0 ]; then
-      #       echo "Deployment successful"
-      #     else
-      #       echo Deployment failed Rolling Back
-      #       helm rollback myhelmtest
-      #     fi
-      #     #deploy-helm.sh
-      #   env:
-      #     ENVIRONMENT: ${{ matrix.environment }}
-      #     REGISTRY: demomfedev.azurecr.io
-      #     APP_NAME: node-docker
-      #     ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
-      #     ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
